@@ -1,0 +1,65 @@
+	{
+		"common-cost": {
+			"nameTemplate": "Spend (<%= currency %>)",
+			"name": "Spend",
+			"unit": "monetary",
+			"describe": "Amount spent in the Channel",
+			"format": {
+				"precision": 2
+			}
+		}
+	}, {
+
+
+		"common-clicks": {
+			"name": "Clicks",
+			"describe": "Number of ad clicks"
+		}
+	}, {
+		"common-impressions": {
+			"name": "Impressions",
+			"describe": "Number of ad impressions"
+		}
+	}, {
+		"common-ctr": {
+			"name": "CTR",
+			"describe": "Click-through rate",
+			"unit": "percent",
+			"format": {
+				"precision": 2
+			},
+			"derived": {
+				"deps": ["common-clicks", "common-impressions"],
+				"fnDef": "return d['common-clicks'] / d['common-impressions'];"
+			}
+		}
+	}, {
+		"common-cpc": {
+			"nameTemplate": "CPC (<%= currency %>)",
+			"name": "CPC",
+			"describe": "Cost per click",
+			"unit": "monetary",
+			"format": {
+				"precision": 2
+			},
+			"derived": {
+				"deps": ["common-cost", "common-clicks"],
+				"fnDef": "return d['common-cost'] / d['common-clicks'];"
+			}
+		}
+	}, {
+		"common-cpm": {
+			"nameTemplate": "CPM (<%= currency %>)",
+			"name": "CPM",
+			"describe": "Cost per thousand impressions",
+			"unit": "monetary",
+			"format": {
+				"precision": 2
+			},
+			"derived": {
+				"deps": ["common-cost", "common-impressions"],
+				"fnDef": "return (d['common-cost'] / d['common-impressions']) * 1000;"
+			}
+		}
+	}
+
