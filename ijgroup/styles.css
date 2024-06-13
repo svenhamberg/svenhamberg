@@ -184,12 +184,31 @@ footer {
         font-size: 12px;
     }
 
+    h1 {
+        font-size: 4rem;
+    }
+
+    h3 {
+        font-size: 1.5rem;
+        line-height: 1.1;
+    }
+
     header {
         height: 8rem;
     }
 
+    #logo img {
+        height: 2.2rem;
+    }
+    #logo a {
+        font-size: 2rem;
+        font-weight: 800;
+        gap: .2rem; 
+    }
+
     #nav li {
-        padding-left: 1rem;
+        padding-left: 0.4rem;
+        font-size: 1.2rem;
     }
 
     .profile,
@@ -199,27 +218,32 @@ footer {
 
     .bio h3,
     .promise h3 {
-        font-size: 3rem;
+        font-size: 2rem;
     }
 
     .bio h5 {
-        font-size: 2rem;
+        font-size: 1.5rem;
     }
     .promise h5 {
         font-size: 1.5rem;
+        margin-bottom: 1rem;
     }
 
     #cases {
-        width: 100%;
+        width: 97%;
     }
 
     .testimonial {
         width: 33%;
-        padding: 3rem 0 0;
+        padding: 1rem 0 0;
+    }
+
+    .testimonial h5 {
+        font-size: 1.3rem;
     }
 
     .testimonial p {
-        font-size: 1.2rem;
+        font-size: 1rem;
         max-width: 90%;
     }
 
