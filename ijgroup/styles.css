@@ -30,7 +30,10 @@ h5 {
     margin-bottom: 1rem;
 }
 
-.bio h5,
+.bio h3 {
+    color: rgb(100, 100, 100);
+}
+
 .promise h5 {
     font-weight: 500;
     line-height: 1.5;
@@ -110,8 +113,13 @@ header li {
 }
 
 .profile {
-    display: flex;
+    /* display: flex;
     justify-content: space-between;
+    align-items: center; */
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    align-items: center;
+    justify-items: center;
     background-color: white;
     padding: 2rem 2rem 1rem;
     max-width: 40%;
@@ -119,7 +127,8 @@ header li {
 }
 
 .profile .image-container {
-    width: 50%;
+    /* width: 50%; */
+    width: 100%;
     text-align: center;
 }
 
@@ -130,6 +139,8 @@ header li {
 
 .bio {
     width: 40%;
+    justify-self: start;
+    margin-left: 15%;
 }
 
 .promise {
@@ -179,7 +190,26 @@ footer {
     font-size: 0.8rem;
 }
 
-@media only screen and (max-width: 760px) {
+@media only screen and (max-width: 1100px) {
+    h1 {
+        font-size: 4rem;
+    }
+    h3 {
+        font-size: 2rem;
+    }
+
+    .profile,
+    .promise {
+        min-width: 80%;
+    }
+    .bio {
+        width: 40%;
+        justify-self: start;
+        margin-left: 15%;
+    }
+}
+
+@media only screen and (max-width: 600px) {
     html {
         font-size: 12px;
     }
@@ -218,7 +248,7 @@ footer {
 
     .bio h3,
     .promise h3 {
-        font-size: 2rem;
+        font-size: 1.9rem;
     }
 
     .bio h5 {
