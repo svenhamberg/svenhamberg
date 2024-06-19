@@ -92,8 +92,9 @@ header li {
 }
 
 #mission {
-    background-color: rgba(1, 1, 1, 0.5);
+    background: radial-gradient(circle, rgba(0, 0, 0, 0.25), rgba(255, 255, 255, 0), rgba(255, 255, 255, 0));
     color: white;
+    text-shadow: 2px 2px black;
     margin: 6rem 0;
     width: 100%;
     text-align: center;
@@ -118,7 +119,7 @@ header li {
     background-color: white;
     padding: 2rem 2rem 1rem;
     max-width: 40%;
-    box-shadow: 1rem 1rem black;
+    box-shadow: 1rem 1rem rgba(255, 255, 255, 0.5);
 }
 
 .profile .image-container {
@@ -143,7 +144,7 @@ header li {
     background-color: white;
     padding: 2rem;
     max-width: 60%;
-    box-shadow: 1rem 1rem black;
+    box-shadow: 1rem 1rem rgba(255, 255, 255, 0.5);
 }
 
 #cases {
