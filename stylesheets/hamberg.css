@@ -3,6 +3,9 @@
 	--muted: #525252;
 	--hover: #aaa;
 	--gap: 12px;
+	/* clears the sensor housing when the phone is held in landscape; falls
+	   back to a plain 16px everywhere else */
+	--gutter: max(16px, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px));
 	--face: "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", sans-serif;
 	/* Longest edge of the full-size photographs. The largest file in the
 	   gallery is 650px, so nothing is ever blown up past its own pixels. */
@@ -17,7 +20,7 @@
 
 body {
 	margin: 0;
-	padding: 0 16px env(safe-area-inset-bottom, 0px);
+	padding: 0 var(--gutter) env(safe-area-inset-bottom, 0px);
 	background: #fff;
 	color: var(--ink);
 	font-family: var(--face);
@@ -63,8 +66,8 @@ a {
 	flex-wrap: nowrap;
 	justify-content: flex-start;
 	gap: 8px;
-	margin: clamp(16px, 5vw, 28px) -16px;
-	padding: 4px 16px;
+	margin: clamp(16px, 5vw, 28px) calc(-1 * var(--gutter));
+	padding: 4px var(--gutter);
 	overflow-x: auto;
 	scrollbar-width: none;
 	-webkit-overflow-scrolling: touch;
@@ -215,6 +218,12 @@ a {
 #lightbox[open] {
 	display: flex;
 	flex-direction: column;
+}
+
+/* A browser with no <dialog> treats this as an unknown element and would
+   otherwise paint the panel over the page on load. */
+#lightbox:not([open]) {
+	display: none;
 }
 
 #lightbox::backdrop {

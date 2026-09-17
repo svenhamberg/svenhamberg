@@ -43,11 +43,14 @@
 			li.hidden = !show;
 			if (show) {
 				visible.push(li);
-				/* restart the fade so the new set animates in */
 				li.style.animation = 'none';
-				void li.offsetWidth;
-				li.style.animation = '';
 			}
+		});
+		/* one forced layout for the whole set, then let the fade run again:
+		   reading each tile in turn costs a synchronous layout per tile */
+		void grid.offsetWidth;
+		visible.forEach(function (li) {
+			li.style.animation = '';
 		});
 	}
 
@@ -136,6 +139,16 @@
 		);
 	}
 
+	/* Every path that clears `busy` drains through here: a press recorded while
+	   an animation was running has to be spent, or it survives to fire against
+	   some later photograph. */
+	function drain() {
+		if (!queued) return;
+		var again = queued > 0 ? 1 : -1;
+		queued -= again;
+		go(again);
+	}
+
 	/* Move to the next (dir 1) or previous (dir -1) photograph, picking up from
 	   wherever a drag left the pictures. */
 	function go(dir, fromX) {
@@ -181,12 +194,7 @@
 			paint();
 			preload();
 			busy = false;
-
-			if (queued) {
-				var again = queued > 0 ? 1 : -1;
-				queued -= again;
-				go(again);
-			}
+			drain();
 		});
 	}
 
@@ -194,6 +202,7 @@
 		var i = visible.indexOf(li);
 		if (i === -1) return;
 		index = i;
+		queued = 0;
 		opener = li.querySelector('a');
 		load(current, visible[index]);
 		fit(visible[index]);
@@ -201,12 +210,11 @@
 		place(incoming, travel());
 		current.removeAttribute('aria-hidden');
 		incoming.setAttribute('aria-hidden', 'true');
+		dialog.showModal();
+		/* after showModal, not before: until the dialog is displayed its
+		   live region is not in the accessibility tree, so the description
+		   of the photograph you just opened would never be announced */
 		paint();
-		if (typeof dialog.showModal === 'function') {
-			dialog.showModal();
-		} else {
-			dialog.setAttribute('open', '');
-		}
 		document.body.style.overflow = 'hidden';
 		/* park focus on the stage: <dialog> would otherwise hand it to the
 		   close button, which then paints a focus ring nobody asked for */
@@ -215,16 +223,15 @@
 	}
 
 	function close() {
-		if (typeof dialog.close === 'function') {
-			dialog.close();
-		} else {
-			dialog.removeAttribute('open');
-		}
+		dialog.close();
 	}
 
 	grid.addEventListener('click', function (e) {
 		var link = e.target.closest('a');
 		if (!link || !grid.contains(link)) return;
+		/* without <dialog> there is no viewer to open: leave the click alone
+		   and let the browser follow the link to the photograph itself */
+		if (typeof dialog.showModal !== 'function') return;
 		/* let modified clicks open the image in a new tab as usual */
 		if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
 		e.preventDefault();
@@ -286,6 +293,9 @@
 	var dx = 0;
 	var dragDir = 0;
 	var dragging = false;
+	/* measured once per gesture: travel() reads a custom property off the
+	   document, which is a style flush we do not want on every touchmove */
+	var dragWidth = 0;
 
 	stage.addEventListener(
 		'touchstart',
@@ -294,6 +304,7 @@
 			dragging = true;
 			dx = 0;
 			dragDir = 0;
+			dragWidth = travel();
 			startX = e.touches[0].clientX;
 			startY = e.touches[0].clientY;
 		},
@@ -318,7 +329,7 @@
 				load(incoming, visible[neighbour(dir)]);
 			}
 			place(current, dx);
-			place(incoming, dx + dragDir * travel());
+			place(incoming, dx + dragDir * dragWidth);
 		},
 		{ passive: true }
 	);
@@ -326,7 +337,7 @@
 	function endDrag() {
 		if (!dragging) return;
 		dragging = false;
-		var width = travel();
+		var width = dragWidth || travel();
 		if (!dragDir || !dx) return;
 
 		/* far enough, or flicked hard enough, to count as a page turn */
@@ -342,6 +353,7 @@
 				back.cancel();
 				away.cancel();
 				busy = false;
+				drain();
 			});
 		}
 		dx = 0;
@@ -349,7 +361,11 @@
 	}
 
 	window.addEventListener('resize', function () {
-		if (dialog.open && !busy) fit(visible[index]);
+		if (!dialog.open || busy || dragging) return;
+		fit(visible[index]);
+		/* the stage may now be wider than the distance the parked photograph
+		   was pushed out by, which would leave it painted inside the frame */
+		place(incoming, travel());
 	});
 
 	stage.addEventListener('touchend', endDrag, { passive: true });
