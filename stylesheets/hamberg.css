@@ -1,439 +1,369 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+:root {
+	--ink: #000;
+	--muted: #525252;
+	--hover: #aaa;
+	--gap: 12px;
+	--face: "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", sans-serif;
+	/* Longest edge of the full-size photographs. The largest file in the
+	   gallery is 650px, so nothing is ever blown up past its own pixels. */
+	--photo-max: 650px;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
 
 body {
 	margin: 0;
-	padding: 10;
+	padding: 0 16px env(safe-area-inset-bottom, 0px);
+	background: #fff;
+	color: var(--ink);
+	font-family: var(--face);
+	-webkit-text-size-adjust: 100%;
 }
 
-a:link {
-	color: #525252;
+a {
+	color: var(--muted);
 	text-decoration: none;
 }
 
-a:visited {
-	color: #525252;
+@media (hover: hover) {
+	a:hover {
+		color: var(--hover);
+	}
 }
 
-a:hover {
-	color: #AAA;
-}
+/* Wordmark */
 
-img {
-	padding: 5px;
-	border-width: 0px;
-}
-
-img:hover {
-	opacity: 50%;
-}
-
-#container {
-	position: relative;
-	margin: auto;
+#name {
+	padding: clamp(20px, 6vw, 40px) 0 0;
 	text-align: center;
-	font-family: Lucida Sans Unicode;
 }
 
-#name { 
-	padding: 20px 0px 0px 0px;
-	line-height: 105%;
-	font-family: Lucida Sans Unicode;
-	font-size: 300%;
+#name h1 {
+	margin: 0;
+	font-size: clamp(1.5rem, 7vw, 3rem);
 	font-weight: 800;
-	color: #000;
+	line-height: 1.05;
+	letter-spacing: -0.01em;
+	color: var(--ink);
 }
 
+/* Filters */
 
-#content { 
-	width: 920px;
-	margin: auto;
+#content {
+	max-width: 920px;
+	margin: 0 auto;
 }
+
+#filters {
+	display: flex;
+	flex-wrap: nowrap;
+	justify-content: flex-start;
+	gap: 8px;
+	margin: clamp(16px, 5vw, 28px) -16px;
+	padding: 4px 16px;
+	overflow-x: auto;
+	scrollbar-width: none;
+	-webkit-overflow-scrolling: touch;
+}
+
+#filters::-webkit-scrollbar {
+	display: none;
+}
+
+.filter {
+	flex: 0 0 auto;
+	min-height: 44px;
+	padding: 10px 18px;
+	border: 1px solid #ddd;
+	border-radius: 999px;
+	background: #fff;
+	color: var(--muted);
+	font: inherit;
+	font-size: 1rem;
+	letter-spacing: 2px;
+	cursor: pointer;
+	transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.filter[aria-pressed="true"] {
+	background: var(--ink);
+	border-color: var(--ink);
+	color: #fff;
+}
+
+@media (hover: hover) {
+	.filter:hover:not([aria-pressed="true"]) {
+		border-color: var(--muted);
+		color: var(--ink);
+	}
+}
+
+.filter:focus-visible {
+	outline: 2px solid var(--ink);
+	outline-offset: 2px;
+}
+
+/* Grid */
+
+.grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+	gap: var(--gap);
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+@media (min-width: 560px) {
+	.grid {
+		grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+	}
+}
+
+.grid li {
+	margin: 0;
+	animation: fade-in 0.35s ease both;
+}
+
+.grid li[hidden] {
+	display: none;
+}
+
+.grid a {
+	display: block;
+	aspect-ratio: 1;
+	overflow: hidden;
+	background: #f2f2f2;
+}
+
+.grid a:focus-visible {
+	outline: 2px solid var(--ink);
+	outline-offset: 2px;
+}
+
+.grid img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	border: 0;
+	transition: opacity 0.2s ease;
+}
+
+@media (hover: hover) {
+	.grid a:hover img {
+		opacity: 0.6;
+	}
+}
+
+@keyframes fade-in {
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
+	}
+}
+
+/* Footer */
 
 #footer {
-	position: relative;
-	font-family: Lucida Sans Unicode;
-	font-size: 70%;
-	padding: 10px;
-	color: #000;
+	max-width: 920px;
+	margin: clamp(24px, 6vw, 40px) auto;
+	text-align: center;
+	font-size: 0.75rem;
+	line-height: 1.6;
+	color: var(--muted);
+}
+
+#footer p {
+	margin: 0;
+}
+
+#footer a {
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+/* Lightbox
+   The panel is built around the photograph: close button along its top edge,
+   counter directly beneath it. Once the window is wide enough to show margins
+   either side of the widest photograph, the arrows move out into them — where
+   they hold still as the picture changes shape — and closing becomes a click on
+   the dimmed page, the usual gesture at that size. */
+
+#lightbox {
+	position: fixed;
+	inset: 0;
+	/* centres the fit-content panel */
 	margin: auto;
-}
-
-.menu {
-	font-size: large;
-	letter-spacing: 2px;
-}
-
-#filters li{
-	display: inline;
-	list-style-type: none;
-	padding-right: 30px;
-}
-
-.list { list-style: none; overflow: hidden; padding: 0; margin: 0; }
-.list li { float: left; display: block; width: 70px; height: 70px; overflow: hidden; margin-right: 20px; margin-bottom: 20px; cursor: pointer; }
-.list li img { height: 70px; }
-.hidden { display: none; } 
-
-/*
- * FancyBox - jQuery Plugin
- * Simple and fancy lightbox alternative
- *
- * Examples and documentation at: http://fancybox.net
- * 
- * Copyright (c) 2008 - 2010 Janis Skarnelis
- *
- * Version: 1.3.1 (05/03/2010)
- * Requires: jQuery v1.3+
- *
- * Dual licensed under the MIT and GPL licenses:
- *   http://www.opensource.org/licenses/mit-license.php
- *   http://www.gnu.org/licenses/gpl.html
- */
-
-#fancybox-loading {
-	position: fixed;
-	top: 50%;
-	left: 50%;
-	height: 40px;
-	width: 40px;
-	margin-top: -20px;
-	margin-left: -20px;
-	cursor: pointer;
-	overflow: hidden;
-	z-index: 1104;
-	display: none;
-}
-
-* html #fancybox-loading {	/* IE6 */
-	position: absolute;
-	margin-top: 0;
-}
-
-#fancybox-loading div {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 40px;
-	height: 480px;
-	background-image: url('../images/fancybox/fancybox.png');
-}
-
-#fancybox-overlay {
-	position: fixed;
-	top: 0;
-	left: 0;
-	bottom: 0;
-	right: 0;
-	background: #000;
-	z-index: 1100;
-	display: none;
-}
-
-* html #fancybox-overlay {	/* IE6 */
-	position: absolute;
-	width: 100%;
-}
-
-#fancybox-tmp {
+	width: fit-content;
+	height: fit-content;
+	max-width: 100vw;
+	max-height: 100dvh;
 	padding: 0;
-	margin: 0;
 	border: 0;
-	overflow: auto;
-	display: none;
+	background: transparent;
+	overflow: visible;
 }
 
-#fancybox-wrap {
-	position: absolute;
-	top: 0;
-	left: 0;
-	margin: 0;
-	padding: 20px;
-	z-index: 1101;
-	display: none;
+#lightbox[open] {
+	display: flex;
+	flex-direction: column;
 }
 
-#fancybox-outer {
+#lightbox::backdrop {
+	background: rgba(0, 0, 0, 0.88);
+}
+
+.lb-stage {
 	position: relative;
+	/* Sized in JS to the exact box the photograph occupies. It morphs as you
+	   move between shots of different shapes.
+	   --photo-max is the longest edge of the full-size files: raise it if you
+	   ever re-export the originals larger and nothing else needs to change. */
+	width: min(100vw, var(--photo-max));
+	height: auto;
+	max-width: 100vw;
+	max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 7rem);
+	margin: 0;
+	overflow: hidden;
+	touch-action: pan-y;
+	transition: width 280ms cubic-bezier(0.22, 0.61, 0.36, 1), height 280ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* Focus parks here when the viewer opens, so no control shows a ring the
+   reader never asked for. It is not reachable by Tab, so it never needs one. */
+.lb-stage:focus {
+	outline: none;
+}
+
+.lb-photo {
+	position: absolute;
+	inset: 0;
 	width: 100%;
 	height: 100%;
-	background: #FFF;
+	/* contain, never crop: while the box morphs between two shapes the
+	   incoming photograph letterboxes rather than losing its edges */
+	object-fit: contain;
+	will-change: transform;
 }
 
-#fancybox-inner {
+.lb-bar-top,
+.lb-controls {
+	display: flex;
+	align-items: center;
+	flex: 0 0 auto;
+	height: 3rem;
+}
+
+.lb-bar-top {
+	justify-content: flex-end;
+}
+
+.lb-controls {
+	justify-content: center;
+	gap: 0.5rem;
+}
+
+.lb-close,
+.lb-nav {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	padding: 0;
+	border: 0;
+	background: transparent;
+	color: #fff;
+	font-family: var(--face);
+	font-size: 1.75rem;
+	line-height: 1;
+	cursor: pointer;
+	opacity: 0.7;
+	transition: opacity 0.15s ease;
+}
+
+@media (hover: hover) {
+	.lb-close:hover,
+	.lb-nav:hover {
+		opacity: 1;
+	}
+}
+
+.lb-close:focus-visible,
+.lb-nav:focus-visible {
+	outline: 2px solid #fff;
+	outline-offset: 2px;
+	opacity: 1;
+}
+
+.lb-nav[hidden] {
+	display: none;
+}
+
+.lb-count {
+	min-width: 5rem;
+	margin: 0;
+	text-align: center;
+	font-size: 0.75rem;
+	letter-spacing: 2px;
+	color: #fff;
+	opacity: 0.6;
+}
+
+@media (min-width: 800px) {
+	/* Room either side of even the widest photograph (650px, plus a 44px
+	   button, a 12px gap and an 8px margin each side): the arrows move out
+	   beside the picture and the close button gives way to clicking the dimmed
+	   page. Raise --photo-max and this threshold moves with it: it is 650 + 128. */
+	.lb-bar-top {
+		display: none;
+	}
+
+	/* Anchored to the photograph's own edges, not to the window: the panel is
+	   exactly as wide as the picture, so -56px puts each arrow 12px clear of it
+	   whatever shape the shot is, and they glide with the box as it morphs.
+	   The vertical sum discounts the counter row below, leaving them centred on
+	   the picture rather than on the panel. */
+	.lb-nav {
+		position: absolute;
+		top: calc((100% - 3rem) / 2 - 22px);
+	}
+
+	.lb-prev {
+		left: -56px;
+	}
+
+	.lb-next {
+		right: -56px;
+	}
+}
+
+/* Announced to screen readers, never painted over a photograph */
+.sr-only {
 	position: absolute;
-	top: 0;
-	left: 0;
 	width: 1px;
 	height: 1px;
+	margin: -1px;
 	padding: 0;
-	margin: 0;
-	outline: none;
 	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
 }
 
-#fancybox-hide-sel-frame {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	background: transparent;
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
 }
-
-#fancybox-close {
-	position: absolute;
-	top: -15px;
-	right: -15px;
-	width: 30px;
-	height: 30px;
-	background-image: url('../images/fancybox/fancybox.png');
-	background-position: -40px 0px;
-	cursor: pointer;
-	z-index: 1103;
-	display: none;
-}
-
-#fancybox_error {
-	color: #444;
-	font: normal 12px/20px Arial;
-	padding: 7px;
-	margin: 0;
-}
-
-#fancybox-content {
-	height: auto;
-	width: auto;
-	padding: 0;
-	margin: 0;
-}
-
-#fancybox-img {
-	width: 100%;
-	height: 100%;
-	padding: 0;
-	margin: 0;
-	border: none;
-	outline: none;
-	line-height: 0;
-	vertical-align: top;
-	-ms-interpolation-mode: bicubic;
-}
-
-#fancybox-frame {
-	position: relative;
-	width: 100%;
-	height: 100%;
-	border: none;
-	display: block;
-}
-
-#fancybox-title {
-	position: absolute;
-	bottom: 0;
-	left: 0;
-	font-family: Arial;
-	font-size: 12px;
-	z-index: 1102;
-}
-
-.fancybox-title-inside {
-	padding: 10px 0;
-	text-align: center;
-	color: #333;
-}
-
-.fancybox-title-outside {
-	padding-top: 5px;
-	color: #FFF;
-	text-align: center;
-	font-weight: bold;
-}
-
-.fancybox-title-over {
-	color: #FFF;
-	text-align: left;
-}
-
-#fancybox-title-over {
-	padding: 10px;
-	background-image: url('../images/fancybox/fancy_title_over.png');
-	display: block;
-}
-
-#fancybox-title-wrap {
-	display: inline-block;
-}
-
-#fancybox-title-wrap span {
-	height: 32px;
-	float: left;
-}
-
-#fancybox-title-left {
-	padding-left: 15px;
-	background-image: url('../images/fancybox/fancybox.png');
-	background-position: -40px -90px;
-	background-repeat: no-repeat;
-}
-
-#fancybox-title-main {
-	font-weight: bold;
-	line-height: 29px;
-	background-image: url('../images/fancybox/fancybox-x.png');
-	background-position: 0px -40px;
-	color: #FFF;
-}
-
-#fancybox-title-right {
-	padding-left: 15px;
-	background-image: url('../images/fancybox/fancybox.png');
-	background-position: -55px -90px;
-	background-repeat: no-repeat;
-}
-
-#fancybox-left, #fancybox-right {
-	position: absolute;
-	bottom: 0px;
-	height: 100%;
-	width: 35%;
-	cursor: pointer;
-	outline: none;
-	background-image: url('../images/fancybox/blank.gif');
-	z-index: 1102;
-	display: none;
-}
-
-#fancybox-left {
-	left: 0px;
-}
-
-#fancybox-right {
-	right: 0px;
-}
-
-#fancybox-left-ico, #fancybox-right-ico {
-	position: absolute;
-	top: 50%;
-	left: -9999px;
-	width: 30px;
-	height: 30px;
-	margin-top: -15px;
-	cursor: pointer;
-	z-index: 1102;
-	display: block;
-}
-
-#fancybox-left-ico {
-	background-image: url('../images/fancybox/fancybox.png');
-	background-position: -40px -30px;
-}
-
-#fancybox-right-ico {
-	background-image: url('../images/fancybox/fancybox.png');
-	background-position: -40px -60px;
-}
-
-#fancybox-left:hover, #fancybox-right:hover {
-	visibility: visible;    /* IE6 */
-}
-
-#fancybox-left:hover span {
-	left: 20px;
-}
-
-#fancybox-right:hover span {
-	left: auto;
-	right: 20px;
-}
-
-.fancy-bg {
-	position: absolute;
-	padding: 0;
-	margin: 0;
-	border: 0;
-	width: 20px;
-	height: 20px;
-	z-index: 1001;
-}
-
-#fancy-bg-n {
-	top: -20px;
-	left: 0;
-	width: 100%;
-	background-image: url('../images/fancybox/fancybox-x.png');
-}
-
-#fancy-bg-ne {
-	top: -20px;
-	right: -20px;
-	background-image: url('../images/fancybox/fancybox.png');
-	background-position: -40px -162px;
-}
-
-#fancy-bg-e {
-	top: 0;
-	right: -20px;
-	height: 100%;
-	background-image: url('../images/fancybox/fancybox-y.png');
-	background-position: -20px 0px;
-}
-
-#fancy-bg-se {
-	bottom: -20px;
-	right: -20px;
-	background-image: url('../images/fancybox/fancybox.png');
-	background-position: -40px -182px; 
-}
-
-#fancy-bg-s {
-	bottom: -20px;
-	left: 0;
-	width: 100%;
-	background-image: url('../images/fancybox/fancybox-x.png');
-	background-position: 0px -20px;
-}
-
-#fancy-bg-sw {
-	bottom: -20px;
-	left: -20px;
-	background-image: url('../images/fancybox/fancybox.png');
-	background-position: -40px -142px;
-}
-
-#fancy-bg-w {
-	top: 0;
-	left: -20px;
-	height: 100%;
-	background-image: url('../images/fancybox/fancybox-y.png');
-}
-
-#fancy-bg-nw {
-	top: -20px;
-	left: -20px;
-	background-image: url('../images/fancybox/fancybox.png');
-	background-position: -40px -122px;
-}
-
-/* IE */
-
-#fancybox-loading.fancybox-ie div	{ background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../images/fancybox/fancy_loading.png', sizingMethod='scale'); }
-.fancybox-ie #fancybox-close		{ background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../images/fancybox/fancy_close.png', sizingMethod='scale'); }
-
-.fancybox-ie #fancybox-title-over	{ background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../images/fancybox/fancy_title_over.png', sizingMethod='scale'); zoom: 1; }
-.fancybox-ie #fancybox-title-left	{ background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../images/fancybox/fancy_title_left.png', sizingMethod='scale'); }
-.fancybox-ie #fancybox-title-main	{ background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../images/fancybox/fancy_title_main.png', sizingMethod='scale'); }
-.fancybox-ie #fancybox-title-right	{ background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../images/fancybox/fancy_title_right.png', sizingMethod='scale'); }
-
-.fancybox-ie #fancybox-left-ico		{ background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../images/fancybox/fancy_nav_left.png', sizingMethod='scale'); }
-.fancybox-ie #fancybox-right-ico	{ background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../images/fancybox/fancy_nav_right.png', sizingMethod='scale'); }
-
-.fancybox-ie .fancy-bg { background: transparent !important; }
-
-.fancybox-ie #fancy-bg-n	{ filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../images/fancybox/fancy_shadow_n.png', sizingMethod='scale'); }
-.fancybox-ie #fancy-bg-ne	{ filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../images/fancybox/fancy_shadow_ne.png', sizingMethod='scale'); }
-.fancybox-ie #fancy-bg-e	{ filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../images/fancybox/fancy_shadow_e.png', sizingMethod='scale'); }
-.fancybox-ie #fancy-bg-se	{ filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../images/fancybox/fancy_shadow_se.png', sizingMethod='scale'); }
-.fancybox-ie #fancy-bg-s	{ filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../images/fancybox/fancy_shadow_s.png', sizingMethod='scale'); }
-.fancybox-ie #fancy-bg-sw	{ filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../images/fancybox/fancy_shadow_sw.png', sizingMethod='scale'); }
-.fancybox-ie #fancy-bg-w	{ filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../images/fancybox/fancy_shadow_w.png', sizingMethod='scale'); }
-.fancybox-ie #fancy-bg-nw	{ filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../images/fancybox/fancy_shadow_nw.png', sizingMethod='scale'); }
